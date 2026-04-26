@@ -35,7 +35,7 @@ build {
 
  provisioner "file" {
      
-         source = "${path.root}/website/"
+         source = "./website/"
          destination = "/tmp/"
 }
 
