@@ -35,8 +35,8 @@ build {
 
  provisioner "file" {
      
-         source = "./website/"
-         destination = "/tmp/website/"
+         source = "./website"
+         destination = "/tmp/"
 }
 
   provisioner "shell" {
