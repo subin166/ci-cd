@@ -1,54 +1,28 @@
-packer {
-  required_plugins {
-    amazon = {
-      source  = "github.com/hashicorp/amazon"
-      version = ">= 1.0.0"
-    }
-  }
-}
+---
+name: "AMI-build1"
+on:
+  push:
+    branches:
+      - main
+jobs:
+  AMI-build2:
+    runs-on: ubuntu-latest
 
-variable "region" {
-  default = "ap-southeast-2"
-}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-source "amazon-ebs" "ami" {
-  region                  = var.region
-  instance_type           = "t2.micro"
-  ssh_username            = "ec2-user"
-
-  ami_name                = "custom-httpd-ami-{{timestamp}}"
-
-  source_ami_filter {
-    filters = {
-      name                = "amzn2-ami-hvm-*-x86_64-gp2"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
-    }
-    owners      = ["amazon"]
-    most_recent = true
-  }
-}
-
-build {
-  name    = "httpd-ami"
-  sources = ["source.amazon-ebs.ami"]
-
- provisioner "file" {
-     
-         source = "../website/"
-         destination = "/tmp/"
-}
-
-  provisioner "shell" {
-    inline = [
-      "sudo yum update -y",
-      "sudo yum install httpd -y",
-      "sudo systemctl enable httpd",
-      "sudo systemctl start httpd",
-       "sudo cp -r /tmp/website/* /var/www/html/",
-      "sudo chown -R apache:apache /var/www/html/",
-        "sudo rm -rf /tmp/website/
-    ]
-  }
-
-
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "latest"
+      - name: Packer Init
+        run: packer init ./packer/main.pkr.hcl
+      - name: Packer validate
+        run: packer validate ./packer/main.pkr.hcl
+      - name: Packer Build
+        run: packer build ./packer/main.pkr.hcl
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_KEY}}
+          AWS_REGION: ap-southeast-2
