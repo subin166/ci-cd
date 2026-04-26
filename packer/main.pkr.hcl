@@ -47,7 +47,6 @@ build {
       "sudo systemctl start httpd",
        "sudo cp -r /tmp/website/* /var/www/html/",
       "sudo chown -R apache:apache /var/www/html/",
-        "sudo rm -rf /tmp/website/"
     ]
   }
 
