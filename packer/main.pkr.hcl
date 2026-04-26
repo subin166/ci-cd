@@ -35,7 +35,7 @@ build {
 
  provisioner "file" {
      
-         source = "../website/"
+         source = "website/"
          destination = "/tmp/"
 }
 
@@ -52,3 +52,4 @@ build {
   }
 
 }
+
